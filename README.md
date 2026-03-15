@@ -164,16 +164,16 @@ Se configuró un **Application Load Balancer (ALB)** en las subredes públicas. 
 Se apagó la instancia 2 (us-east-1b) para simular un fallo y verificar que el sistema seguía funcionando.
 
 ### Estado inicial — app funcionando con ambas instancias activas
-![App funcionando antes](evidencias/evidencia-1-funcionando-antespng)
+![App funcionando antes](evidencias/evidencia-1-funcionando-antespng.png)
 
 ### Ambas instancias healthy en el Load Balancer
-![Ambas healthy](evidencias/evidencia-2-ambas-healthy)
+![Ambas healthy](evidencias/evidencia-2-ambas-healthy.png)
 
 ### Instancia 2 apagada — ALB detecta la caída y redirige tráfico
-![Instancia 2 caída](evidencias/evidencia-3-instancia2-caida)
+![Instancia 2 caída](evidencias/evidencia-3-instancia2-caida.png)
 
 ### App sigue funcionando desde la instancia 1 (us-east-1a)
-![App funcionando después](evidencias/evidencia-4-funcionando-despuespng)
+![App funcionando después](evidencias/evidencia-4-funcionando-despuespng.png)
 
 El Load Balancer detectó automáticamente que la instancia 2 estaba caída y redirigió todo el tráfico a la instancia 1, sin ninguna interrupción para el usuario final.
 ## 10. Estructura del repositorio
