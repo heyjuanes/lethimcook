@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let Him Cook</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Segoe UI, sans-serif; background:#141414; color:#e5e5e5; }
+.banner { background:#141414; border-bottom:3px solid #E50914; padding:0 32px; display:flex; align-items:center; justify-content:space-between; height:80px; flex-wrap:wrap; gap:10px; }
+.logo { display:flex; align-items:center; gap:12px; }
+.logo-fire { width:36px; height:36px; background:#E50914; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.logo-title { font-size:22px; font-weight:800; color:#E50914; }
+.logo-sub { font-size:11px; color:#808080; letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
+.names { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.name-badge { background:#2a2a2a; border:0.5px solid #333; border-radius:20px; padding:5px 14px; font-size:11px; color:#b3b3b3; }
+.hero { background:#1a1a1a; border-bottom:1px solid #222; padding:40px 32px; text-align:center; }
+.hero h1 { font-size:32px; font-weight:800; color:#fff; margin-bottom:6px; }
+.hero p { font-size:14px; color:#808080; }
+.body { padding:28px 20px; max-width:740px; margin:0 auto; }
+.card { background:#1a1a1a; border:0.5px solid #2a2a2a; border-radius:12px; padding:24px; margin-bottom:20px; }
+.label { font-size:11px; color:#808080; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+textarea { width:100%; background:#0d0d0d; border:0.5px solid #333; border-radius:8px; padding:14px; color:#e5e5e5; font-size:14px; resize:none; height:80px; outline:none; font-family:Segoe UI,sans-serif; }
+textarea:focus { border-color:#E50914; }
+textarea::placeholder { color:#444; }
+.btn-red { width:100%; padding:14px; background:#E50914; border:none; border-radius:8px; color:#fff; font-size:15px; font-weight:700; cursor:pointer; margin-top:14px; }
+.btn-red:hover { background:#f40612; }
+.btn-outline { width:100%; padding:12px; background:transparent; border:0.5px solid #E50914; border-radius:8px; color:#E50914; font-size:14px; font-weight:600; cursor:pointer; margin-top:10px; }
+.btn-outline:hover { background:#E50914; color:#fff; }
+.recipe-card { background:#0d0d0d; border:0.5px solid #2a2a2a; border-radius:12px; padding:24px; margin-top:16px; display:none; }
+.recipe-img-placeholder { width:100%; height:200px; border-radius:10px; background:#1a1a1a; margin-bottom:20px; display:flex; align-items:center; justify-content:center; color:#444; font-size:13px; border:0.5px solid #2a2a2a; }
+.recipe-name { font-size:22px; font-weight:800; color:#fff; margin-bottom:8px; }
+.recipe-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.meta-badge { background:#1a1a1a; border:0.5px solid #333; border-radius:6px; padding:6px 12px; font-size:12px; color:#b3b3b3; }
+.section-title { font-size:11px; font-weight:700; color:#E50914; text-transform:uppercase; letter-spacing:1px; margin:20px 0 10px; }
+.ingredient { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:0.5px solid #1a1a1a; font-size:14px; color:#e5e5e5; }
+.dot { width:6px; height:6px; background:#E50914; border-radius:50%; flex-shrink:0; }
+.step { border-bottom:0.5px solid #1a1a1a; }
+.step-header { display:flex; gap:14px; padding:12px 0; cursor:pointer; align-items:flex-start; user-select:none; }
+.step-header:hover .step-text { color:#fff; }
+.step-num { width:28px; height:28px; background:#E50914; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0; }
+.step-text { font-size:14px; color:#e5e5e5; line-height:1.5; flex:1; padding-top:4px; }
+.step-arrow { color:#444; font-size:11px; padding-top:6px; transition:transform 0.2s; flex-shrink:0; }
+.step-arrow.open { transform:rotate(180deg); color:#E50914; }
+.step-detail { font-size:13px; color:#808080; line-height:1.6; padding:0 0 14px 42px; display:none; }
+.step-detail.open { display:block; }
+.consejo { background:#1a1a1a; border-left:3px solid #E50914; border-radius:0 8px 8px 0; padding:14px 16px; margin-top:20px; font-size:13px; color:#b3b3b3; font-style:italic; }
+.hist-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.hist-title-label { font-size:11px; color:#808080; text-transform:uppercase; letter-spacing:1px; }
+.btn-clear-all { background:transparent; border:0.5px solid #333; border-radius:6px; padding:4px 10px; font-size:11px; color:#808080; cursor:pointer; }
+.btn-clear-all:hover { border-color:#E50914; color:#E50914; }
+.hist-item { padding:12px; border-bottom:0.5px solid #222; border-radius:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.hist-item:hover { background:#0d0d0d; }
+.hist-left { flex:1; }
+.hist-ing { font-size:13px; color:#e5e5e5; margin-bottom:2px; }
+.hist-preview { font-size:12px; color:#666; }
+.hist-date { font-size:11px; color:#444; margin-top:2px; }
+.btn-delete { background:transparent; border:none; color:#444; font-size:16px; cursor:pointer; padding:4px 8px; border-radius:4px; }
+.btn-delete:hover { color:#E50914; }
+.loading { text-align:center; padding:20px; display:none; }
+.spinner { display:inline-block; width:32px; height:32px; border:2px solid #222; border-top-color:#E50914; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="logo">
+    <div class="logo-fire">&#128293;</div>
+    <div>
+      <div class="logo-title">LET HIM COOK</div>
+      <div class="logo-sub">Computacion en la Nube · Practica 4</div>
+    </div>
+  </div>
+  <div class="names">
+    <span class="name-badge">Daniel Fernando Mejia</span>
+    <span class="name-badge">Ruben Dario Salcedo</span>
+    <span class="name-badge">Juan Espitia</span>
+  </div>
+</div>
+<div class="hero">
+  <h1>Que hay en tu nevera?</h1>
+  <p>Dinos tus ingredientes y la IA cocina por ti</p>
+</div>
+<div class="body">
+  <div class="card">
+    <div class="label">Tus ingredientes</div>
+    <textarea id="ingredientes" placeholder="Ejemplo: pollo, arroz, tomate, cebolla, ajo..."></textarea>
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p style="margin-top:10px;font-size:13px;color:#666;">Generando receta...</p>
+    </div>
+    <button class="btn-red" id="btnGenerar" onclick="generarReceta(false)">Generar receta</button>
+  </div>
+
+  <div class="recipe-card" id="recipeCard">
+    <div id="imgContainer"></div>
+    <div class="recipe-name" id="recipeName"></div>
+    <div class="recipe-meta" id="recipeMeta"></div>
+    <div class="section-title">Ingredientes</div>
+    <div id="recipeIngredientes"></div>
+    <div class="section-title">Preparacion</div>
+    <div id="recipePasos"></div>
+    <div class="consejo" id="recipeConsejo"></div>
+    <button class="btn-red" style="margin-top:20px;" onclick="generarReceta(true)">Generar otra alternativa</button>
+    <button class="btn-outline" onclick="guardarPDF()">Guardar receta en PDF</button>
+  </div>
+
+  <div class="card">
+    <div class="hist-header">
+      <div class="hist-title-label">Recetas recientes</div>
+      <button class="btn-clear-all" onclick="borrarTodo()">Borrar todo</button>
+    </div>
+    <div id="historial"><p style="color:#444;font-size:13px;">Sin recetas aun.</p></div>
+  </div>
+</div>
+<script>
+var recetaActual = null;
+
+function toggleStep(header) {
+  var arrow = header.querySelector('.step-arrow');
+  var detail = header.nextElementSibling;
+  arrow.classList.toggle('open');
+  detail.classList.toggle('open');
+}
+
+function generarReceta(alternativa) {
+  var ingredientes = document.getElementById('ingredientes').value.trim();
+  if (!ingredientes) { alert('Escribe tus ingredientes primero'); return; }
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('recipeCard').style.display = 'none';
+  document.getElementById('btnGenerar').disabled = true;
+  fetch('/generar', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ingredientes: ingredientes, alternativa: alternativa})
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btnGenerar').disabled = false;
+    if (data.error) { alert('Error: ' + data.error); return; }
+    recetaActual = data.receta;
+    mostrarReceta(data.receta);
+    cargarHistorial();
+  })
+  .catch(function(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btnGenerar').disabled = false;
+    alert('Error al conectar');
+  });
+}
+
+function mostrarReceta(r) {
+  document.getElementById('recipeCard').style.display = 'block';
+  var keyword = encodeURIComponent(r.imagen_keyword || 'food');
+var imgContainer = document.getElementById('imgContainer');
+imgContainer.innerHTML = '';
+  document.getElementById('recipeName').textContent = r.nombre;
+  document.getElementById('recipeMeta').innerHTML =
+    '<span class="meta-badge">Tiempo: ' + r.tiempo + '</span>' +
+    '<span class="meta-badge">Porciones: ' + r.porciones + '</span>' +
+    '<span class="meta-badge">Dificultad: ' + r.dificultad + '</span>';
+  var ings = '';
+  for (var i = 0; i < r.ingredientes.length; i++) {
+    ings += '<div class="ingredient"><span class="dot"></span>' + r.ingredientes[i] + '</div>';
+  }
+  document.getElementById('recipeIngredientes').innerHTML = ings;
+  var pasos = '';
+  for (var j = 0; j < r.pasos.length; j++) {
+    pasos += '<div class="step"><div class="step-header" onclick="toggleStep(this)"><span class="step-num">' + (j+1) + '</span><span class="step-text">' + r.pasos[j].titulo + '</span><span class="step-arrow">v</span></div><div class="step-detail">' + r.pasos[j].detalle + '</div></div>';
+  }
+  document.getElementById('recipePasos').innerHTML = pasos;
+  document.getElementById('recipeConsejo').textContent = 'Chef tip: ' + r.consejo;
+  document.getElementById('recipeCard').scrollIntoView({behavior:'smooth'});
+}
+
+function cargarRecetaGuardada(recetaJson) {
+  try {
+    var r = JSON.parse(recetaJson);
+    recetaActual = r;
+    mostrarReceta(r);
+  } catch(e) {}
+}
+
+function guardarPDF() {
+  if (!recetaActual) return;
+  var doc = new window.jspdf.jsPDF();
+  var r = recetaActual;
+  doc.setFillColor(20, 20, 20);
+  doc.rect(0, 0, 210, 297, 'F');
+  doc.setFillColor(229, 9, 20);
+  doc.rect(0, 0, 210, 42, 'F');
+  doc.setFillColor(180, 0, 0);
+  doc.rect(0, 38, 210, 4, 'F');
+  doc.setFontSize(20);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont(undefined, 'bold');
+  doc.text('LET HIM COOK', 20, 18);
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(255, 200, 200);
+  doc.text('COMPUTACION EN LA NUBE - PRACTICA 4', 20, 27);
+  doc.text('Daniel Fernando Mejia  |  Ruben Dario Salcedo  |  Juan Espitia', 20, 34);
+  doc.setFontSize(17);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont(undefined, 'bold');
+  doc.text(r.nombre, 20, 57);
+  doc.setFontSize(9);
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(150, 150, 150);
+  doc.text('Tiempo: ' + r.tiempo + '   |   Porciones: ' + r.porciones + '   |   Dificultad: ' + r.dificultad, 20, 66);
+  doc.setDrawColor(229, 9, 20);
+  doc.setLineWidth(0.8);
+  doc.line(20, 71, 190, 71);
+  var y = 82;
+  doc.setFontSize(10);
+  doc.setTextColor(229, 9, 20);
+  doc.setFont(undefined, 'bold');
+  doc.text('INGREDIENTES', 20, y);
+  y += 8;
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(220, 220, 220);
+  doc.setFontSize(9);
+  for (var i = 0; i < r.ingredientes.length; i++) {
+    doc.setFillColor(229, 9, 20);
+    doc.circle(23, y - 1.5, 1.5, 'F');
+    doc.text(r.ingredientes[i], 28, y);
+    y += 7;
+  }
+  y += 6;
+  doc.setDrawColor(50, 50, 50);
+  doc.setLineWidth(0.3);
+  doc.line(20, y, 190, y);
+  y += 10;
+  doc.setFontSize(10);
+  doc.setTextColor(229, 9, 20);
+  doc.setFont(undefined, 'bold');
+  doc.text('PREPARACION', 20, y);
+  y += 10;
+  for (var j = 0; j < r.pasos.length; j++) {
+    if (y > 255) {
+      doc.addPage();
+      doc.setFillColor(20, 20, 20);
+      doc.rect(0, 0, 210, 297, 'F');
+      y = 20;
+    }
+    doc.setFillColor(229, 9, 20);
+    doc.circle(24, y - 2, 5, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont(undefined, 'bold');
+    doc.text(String(j + 1), j < 9 ? 22.5 : 21.5, y);
+    doc.setFontSize(10);
+    doc.setTextColor(230, 230, 230);
+    var tituloLines = doc.splitTextToSize(r.pasos[j].titulo, 150);
+    doc.text(tituloLines, 33, y);
+    y += tituloLines.length * 6 + 2;
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(140, 140, 140);
+    var detalleLines = doc.splitTextToSize(r.pasos[j].detalle, 150);
+    doc.text(detalleLines, 33, y);
+    y += detalleLines.length * 5 + 8;
+  }
+  y += 4;
+  if (y > 260) {
+    doc.addPage();
+    doc.setFillColor(20, 20, 20);
+    doc.rect(0, 0, 210, 297, 'F');
+    y = 20;
+  }
+  doc.setFillColor(30, 30, 30);
+  doc.rect(18, y - 4, 174, 20, 'F');
+  doc.setDrawColor(229, 9, 20);
+  doc.setLineWidth(2);
+  doc.line(18, y - 4, 18, y + 16);
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'italic');
+  doc.setTextColor(160, 160, 160);
+  var consejoLines = doc.splitTextToSize('Chef tip: ' + r.consejo, 155);
+  doc.text(consejoLines, 24, y + 3);
+  doc.save(r.nombre.replace(/ /g, '_') + '.pdf');
+}
+
+function cargarHistorial() {
+  fetch('/historial')
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (!data.length) {
+      document.getElementById('historial').innerHTML = '<p style="color:#444;font-size:13px;">Sin recetas aun.</p>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var r = data[i];
+      var jsonSafe = r.receta_json.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
+      html += '<div class="hist-item" onclick="cargarRecetaGuardada(\'' + jsonSafe + '\')"><div class="hist-left"><div class="hist-ing">' + r.ingredientes + '</div><div class="hist-preview">' + r.receta_nombre + '</div><div class="hist-date">' + r.fecha + '</div></div><button class="btn-delete" onclick="event.stopPropagation();borrarReceta(' + r.id + ')">x</button></div>';
+    }
+    document.getElementById('historial').innerHTML = html;
+  })
+  .catch(function(e) {});
+}
+
+function borrarReceta(id) {
+  fetch('/eliminar/' + id, {method: 'DELETE'})
+  .then(function() { cargarHistorial(); });
+}
+
+function borrarTodo() {
+  if (!confirm('Borrar todo el historial?')) return;
+  fetch('/eliminar-todo', {method: 'DELETE'})
+  .then(function() { cargarHistorial(); });
+}
+
+cargarHistorial();
+</script>
+</body>
+</html>
